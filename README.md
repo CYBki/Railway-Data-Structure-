@@ -8,6 +8,7 @@ While riding the Ankara Metro, I realized that metro systems work like data stru
 - **Express trains** skip stops for faster access
 - **Transfer stations** connect different data domains
 - **Branch lines** create hierarchical data organization
+🔗 Subway network: https://imgur.com/a/R7mObhK
 
 So I built a data structure that works like a metro system with full visual representation.
 
