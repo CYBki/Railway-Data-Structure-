@@ -1,4 +1,4 @@
-# Railway-Data-Structure-🚇
+# Subway-Data-Structure-🚇
 
 A data structure inspired by metro/subway systems for organizing and navigating data.
 
@@ -23,10 +23,10 @@ So I built a data structure that works like a metro system.
 ## Basic Usage
 
 ```python
-from railway_data_structure import RailwayNetwork
+from Subway_data_structure import SubwayNetwork
 
 # Create network
-network = RailwayNetwork()
+network = SubwayNetwork()
 
 # Create main line with data
 main_data = ["User", "Auth", "Process", "Response"]
@@ -66,14 +66,14 @@ This could be useful for:
 
 ## Files
 
-- `railway_data_structure.py` - Main implementation
-- Contains all classes: RailwayNetwork, RailwayStation, RailwayTrack
+- `Subway_data_structure.py` - Main implementation
+- Contains all classes: SubwayNetwork, SubwayStation, SubwayTrack
 - Includes Ankara Metro example and benchmarks
 
 ## Running
 
 ```bash
-python railway_data_structure.py
+python Subway_data_structure.py
 ```
 
 This will show the network structure, statistics, and run performance tests.
