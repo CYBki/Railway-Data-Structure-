@@ -16,14 +16,14 @@ class TrackType(Enum):
     EXPRESS = "express"     # Hızlı hat
     LOOP = "loop"          # Döngü hat
 
-class RailwayStation:
+class SubwayStation:
     """Metro istasyonu benzeri veri nodu"""
     def __init__(self, station_id: str, data: Any, station_type: StationType = StationType.REGULAR):
         self.station_id = station_id
         self.data = data
         self.station_type = station_type
         
-        # Railway connections - Metro benzeri bağlantılar
+        # Subway connections - Metro benzeri bağlantılar
         self.next_stations = {}  # track_type -> next_station
         self.prev_stations = {}  # track_type -> prev_station
         self.branch_connections = []  # Dal hatlara bağlantılar
@@ -40,7 +40,7 @@ class RailwayStation:
         self.last_accessed = None
         self.access_pattern = []  # Son erişim türleri
 
-class RailwayTrack:
+class SubwayTrack:
     """Metro hattı benzeri veri yolu"""
     def __init__(self, track_id: str, track_type: TrackType, color: str):
         self.track_id = track_id
@@ -51,7 +51,7 @@ class RailwayTrack:
         self.express_stops = set()  # Express durduğu istasyonlar
         self.capacity = float('inf')  # Hat kapasitesi
 
-class RailwayNetwork:
+class SubwayNetwork:
     """
     Metro ağı benzeri veri yapısı
     
@@ -64,8 +64,8 @@ class RailwayNetwork:
     """
     
     def __init__(self):
-        self.stations = {}  # station_id -> RailwayStation
-        self.tracks = {}    # track_id -> RailwayTrack
+        self.stations = {}  # station_id -> SubwayStation
+        self.tracks = {}    # track_id -> SubwayTrack
         self.junctions = {}  # junction_id -> set of connected tracks
         self.network_map = {}  # Ağ topolojisi
         
@@ -76,14 +76,14 @@ class RailwayNetwork:
         
     def create_main_line(self, line_id: str, stations_data: List[Any], color: str = "blue"):
         """Ana hat oluştur (linear linked list benzeri)"""
-        track = RailwayTrack(line_id, TrackType.MAIN, color)
+        track = SubwayTrack(line_id, TrackType.MAIN, color)
         
         prev_station = None
         for i, data in enumerate(stations_data):
             station_id = f"{line_id}_station_{i}"
             station_type = StationType.TERMINAL if (i == 0 or i == len(stations_data)-1) else StationType.REGULAR
             
-            station = RailwayStation(station_id, data, station_type)
+            station = SubwayStation(station_id, data, station_type)
             station.line_colors.add(color)
             
             # Linear bağlantıları kur
@@ -109,14 +109,14 @@ class RailwayNetwork:
         junction_station = self.stations[junction_station_id]
         junction_station.station_type = StationType.JUNCTION
         
-        track = RailwayTrack(branch_id, TrackType.BRANCH, color)
+        track = SubwayTrack(branch_id, TrackType.BRANCH, color)
         
         prev_station = junction_station
         for i, data in enumerate(branch_data):
             station_id = f"{branch_id}_station_{i}"
             station_type = StationType.TERMINAL if i == len(branch_data)-1 else StationType.REGULAR
             
-            station = RailwayStation(station_id, data, station_type)
+            station = SubwayStation(station_id, data, station_type)
             station.line_colors.add(color)
             
             # Branch bağlantısı
@@ -143,7 +143,7 @@ class RailwayNetwork:
             raise ValueError(f"Main line {main_line_id} not found")
         
         main_track = self.tracks[main_line_id]
-        express_track = RailwayTrack(express_id, TrackType.EXPRESS, color)
+        express_track = SubwayTrack(express_id, TrackType.EXPRESS, color)
         
         prev_express_station = None
         for station_index in express_stations:
@@ -177,7 +177,7 @@ class RailwayNetwork:
             raise ValueError("Start or end station not found for loop")
         
         loop_id = f"loop_{start_station_id}_{end_station_id}"
-        loop_track = RailwayTrack(loop_id, TrackType.LOOP, color)
+        loop_track = SubwayTrack(loop_id, TrackType.LOOP, color)
         
         # U-shape bağlantısı
         start_station.next_stations[TrackType.LOOP] = end_station
@@ -211,7 +211,7 @@ class RailwayNetwork:
         if not (start_station and end_station):
             return []
         
-        # Railway-specific pathfinding
+        # Subway-specific pathfinding
         visited = set()
         queue = [(start_station, [start_station.station_id], 0)]  # station, path, cost
         
@@ -267,7 +267,7 @@ class RailwayNetwork:
         
         return []  # No path found
     
-    def _find_station_by_data(self, data: Any) -> Optional[RailwayStation]:
+    def _find_station_by_data(self, data: Any) -> Optional[SubwayStation]:
         """Veri içeriğine göre istasyon bul"""
         for station in self.stations.values():
             if station.data == data:
@@ -297,7 +297,7 @@ class RailwayNetwork:
         
         # Yeni istasyon oluştur
         station_id = f"{target_track.track_id}_auto_{len(target_track.stations)}"
-        new_station = RailwayStation(station_id, data)
+        new_station = SubwayStation(station_id, data)
         new_station.line_colors.add(target_track.color)
         
         # Hat sonuna ekle
@@ -349,7 +349,7 @@ class RailwayNetwork:
     
     def visualize_network_structure(self) -> str:
         """Ağ yapısını metin olarak görselleştir"""
-        result = ["=== RAILWAY NETWORK STRUCTURE ===\n"]
+        result = ["=== Subway NETWORK STRUCTURE ===\n"]
         
         for track_id, track in self.tracks.items():
             result.append(f"🚇 {track.track_type.value.upper()} LINE: {track_id} ({track.color})")
@@ -377,8 +377,8 @@ class RailwayNetwork:
 
 
 def create_ankara_metro_inspired():
-    """Ankara Metro'dan ilham alan Railway Data Structure"""
-    network = RailwayNetwork()
+    """Ankara Metro'dan ilham alan Subway Data Structure"""
+    network = SubwayNetwork()
     
     # M1 Hattı benzeri (Kızılay - Ostim)
     m1_data = ["Kızılay_Data", "Sıhhiye_Data", "Ulus_Data", "Akköprü_Data", "İvedik_Data", "Ostim_Data"]
@@ -406,28 +406,28 @@ def create_ankara_metro_inspired():
     return network
 
 
-def benchmark_railway_vs_traditional():
-    """Railway Data Structure vs geleneksel yapılar"""
-    print("=== RAILWAY DATA STRUCTURE BENCHMARK ===")
+def benchmark_Subway_vs_traditional():
+    """Subway Data Structure vs geleneksel yapılar"""
+    print("=== Subway DATA STRUCTURE BENCHMARK ===")
     
     # Test data
     test_data = [f"data_item_{i}" for i in range(1000)]
     
-    # Railway Network
+    # Subway Network
     start_time = time.time()
-    railway = RailwayNetwork()
+    Subway = SubwayNetwork()
     
     # Sequential insertion
     for i, data in enumerate(test_data):
         if i % 100 == 0 and i > 0:
             # Create branch every 100 items
-            railway.create_branch_line(f"branch_{i//100}", 
+            Subway.create_branch_line(f"branch_{i//100}", 
                                      f"main_0_station_{i//2}", 
                                      test_data[i:i+50])
         else:
-            railway.insert_data_optimally(data)
+            Subway.insert_data_optimally(data)
     
-    railway_build_time = time.time() - start_time
+    Subway_build_time = time.time() - start_time
     
     # Traditional List
     start_time = time.time()
@@ -441,10 +441,10 @@ def benchmark_railway_vs_traditional():
     for i in range(100):
         start_data = test_data[random.randint(0, len(test_data)//2)]
         end_data = test_data[random.randint(len(test_data)//2, len(test_data)-1)]
-        route = railway.find_optimal_route(start_data, end_data)
+        route = Subway.find_optimal_route(start_data, end_data)
         if route:
             routes_found += 1
-    railway_route_time = time.time() - start_time
+    Subway_route_time = time.time() - start_time
     
     # Traditional search
     start_time = time.time()
@@ -456,17 +456,17 @@ def benchmark_railway_vs_traditional():
             searches_found += 1
     list_search_time = time.time() - start_time
     
-    print(f"Build Time - Railway: {railway_build_time:.4f}s, List: {list_build_time:.4f}s")
-    print(f"Route/Search Time - Railway: {railway_route_time:.4f}s, List: {list_search_time:.4f}s")
+    print(f"Build Time - Subway: {Subway_build_time:.4f}s, List: {list_build_time:.4f}s")
+    print(f"Route/Search Time - Subway: {Subway_route_time:.4f}s, List: {list_search_time:.4f}s")
     print(f"Routes Found: {routes_found}/100, Searches: {searches_found}/100")
     
     # Network statistics
-    stats = railway.get_network_statistics()
-    print(f"\nRailway Network Stats:")
+    stats = Subway.get_network_statistics()
+    print(f"\nSubway Network Stats:")
     for key, value in stats.items():
         print(f"  {key}: {value}")
     
-    return railway
+    return Subway
 
 
 if __name__ == "__main__":
@@ -489,4 +489,4 @@ if __name__ == "__main__":
     
     # Performance benchmark
     print("\n" + "="*50)
-    benchmark_railway_vs_traditional()
+    benchmark_Subway_vs_traditional()
