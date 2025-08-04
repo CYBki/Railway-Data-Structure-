@@ -376,33 +376,32 @@ class SubwayNetwork:
         return "\n".join(result)
 
 
-def create_ankara_metro_inspired():
-    """Subway Data Structure inspired by Ankara Metro"""
+def build_ankara_metro_network():
+    """Gerçek Ankara Metro hattını temsil eden veri yapısını kurar"""
     network = SubwayNetwork()
-    
-    # M1 Line (Kizılay - Ostim)
-    m1_data = ["Kızılay_Data", "Sıhhiye_Data", "Ulus_Data", "Akköprü_Data", "İvedik_Data", "Ostim_Data"]
-    m1_track = network.create_main_line("M1_Line", m1_data, "blue")
-    
-    # M2 Line (Kızılay - Çayyolu)
-    m2_data = ["Kavaklıdere_Data", "Bilkent_Data", "Çayyolu_Data"]  
-    # Starting from Kızılay junction
-    m2_track = network.create_branch_line("M2_Branch", "M1_Line_station_0", m2_data, "green")
-    
-    # M3 Line (Batıkent - Törekent, from Ostim junction)
-    m3_data = ["Batıkent_Data", "Törekent_Data"]
-    m3_track = network.create_branch_line("M3_Branch", "M1_Line_station_5", m3_data, "red")
-    
-    # Express line (Bilkent - Ostim direct)
-    network.create_express_line("Express_Line", "M1_Line", [0, 5], "yellow")  # Kızılay - Ostim
-    
-    # U-shape loop (Koru - Törekent style)
+
+    # M1 Hattı (Kızılay - Ostim)
+    m1_data = ["Kızılay", "Sıhhiye", "Ulus", "Akköprü", "İvedik", "Ostim"]
+    network.create_main_line("M1_Line", m1_data, "blue")
+
+    # M2 Hattı (Kızılay - Çayyolu)
+    m2_data = ["Kavaklıdere", "Bilkent", "Çayyolu"]
+    network.create_branch_line("M2_Branch", "M1_Line_station_0", m2_data, "green")
+
+    # M3 Hattı (Ostim'den Törekent'e uzanan dal)
+    m3_data = ["Batıkent", "Törekent"]
+    network.create_branch_line("M3_Branch", "M1_Line_station_5", m3_data, "red")
+
+    # Kızılay ↔ Ostim arası ekspres hat
+    network.create_express_line("Express_Line", "M1_Line", [0, 5], "yellow")
+
+    # Çayyolu ↔ Törekent bağlantısı (halka)
     network.create_loop_connection("M2_Branch_station_2", "M3_Branch_station_1", "orange")
-    
-    # Transfer connections
-    network.add_transfer_connection("M1_Line_station_0", "M2_Branch_station_0")  # Kızılay transfer
-    network.add_transfer_connection("M1_Line_station_5", "M3_Branch_station_0")  # Ostim transfer
-    
+
+    # Transfer noktaları
+    network.add_transfer_connection("M1_Line_station_0", "M2_Branch_station_0")
+    network.add_transfer_connection("M1_Line_station_5", "M3_Branch_station_0")
+
     return network
 
 
@@ -483,23 +482,24 @@ def benchmark_subway_vs_traditional():
 
 
 if __name__ == "__main__":
-    # Create Ankara Metro-inspired network
-    ankara_network = create_ankara_metro_inspired()
-    
-    # Show network structure
+    # Ankara Metro ağını oluştur
+    ankara_network = build_ankara_metro_network()
+
+    # Ağ yapısını göster
     print(ankara_network.visualize_network_structure())
-    
-    # Statistics
+
+    # İstatistikler
     stats = ankara_network.get_network_statistics()
     print("Network Statistics:")
     for key, value in stats.items():
         print(f"  {key}: {value}")
-    
-    # Routing test
-    print("\n=== ROUTING TEST ===")
-    route = ankara_network.find_optimal_route("Bilkent_Data", "Törekent_Data")
-    print(f"Route from Bilkent to Törekent: {' -> '.join(route)}")
-    
-    # Performance benchmark
+
+    # Rota testi
+    print("\n=== ROTA TESTİ ===")
+    route_ids = ankara_network.find_optimal_route("Bilkent", "Törekent")
+    route_names = [ankara_network.stations[s].data for s in route_ids]
+    print(f"Bilkent'ten Törekent'e rota: {' -> '.join(route_names)}")
+
+    # Performans karşılaştırması
     print("\n" + "="*50)
     benchmark_subway_vs_traditional()
